@@ -53,8 +53,8 @@ var jshintLib = jshint('lib');
 var jshintTests = jshint(testsTree);
 
 var bundle = compileModules('lib', {
-  inputFiles: ['dag.umd.js'],
-  output: '/dag.js',
+  inputFiles: ['dag-map.umd.js'],
+  output: '/dag-map.js',
   formatter: 'bundle',
 });
 
@@ -62,13 +62,13 @@ var bundle = compileModules('lib', {
 bundle = concat(mergeTrees([bundle, configTree]), {
   inputFiles: [
     'versionTemplate.txt',
-    'dag.js'
+    'dag-map.js'
   ],
-  outputFile: '/dag.js'
+  outputFile: '/dag-map.js'
 });
 
 bundle = replace(bundle, {
-  files: [ 'dag.js' ],
+  files: [ 'dag-map.js' ],
   pattern: {
     match: /VERSION_PLACEHOLDER_STRING/g,
     replacement: calculateVersion()
@@ -101,15 +101,15 @@ function generateNamedAMDTree(inputTree, outputFile) {
   return workingTree;
 }
 
-var namedAMDTree = generateNamedAMDTree('lib', 'dag.amd.js');
+var namedAMDTree = generateNamedAMDTree('lib', 'dag-map.amd.js');
 var namedAMDTestTree = generateNamedAMDTree(mergeTrees(['lib', testsTree, jshintLib, jshintTests]), 'dag-tests.amd.js');
 
 var trees = [qunit, loader, testIndex, testLoader, bundle, namedAMDTree, namedAMDTestTree];
 
 if (process.env.ENV === 'production') {
   trees.push(closureCompiler(moveFile(bundle, {
-    srcFile: 'dag.js',
-    destFile: 'dag.min.js'
+    srcFile: 'dag-map.js',
+    destFile: 'dag-map.min.js'
   }), {
     compilation_level: 'ADVANCED_OPTIMIZATIONS',
   }));

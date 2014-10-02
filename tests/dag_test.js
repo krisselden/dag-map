@@ -1,4 +1,4 @@
-import DAG from "dag";
+import DAG from "dag-map";
 import indexOf from "helper";
 
 module("Ember.DAG");
