@@ -1,5 +1,5 @@
 {
-  "name": "dag.js",
+  "name": "dag-map",
   "devDependencies": {
     "loader": "stefanpenner/loader.js#1.0.1",
     "qunit": "~1.14.0",
