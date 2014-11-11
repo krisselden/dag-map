@@ -28,6 +28,7 @@
     "ember-cli": "0.0.40",
     "es6-module-transpiler-amd-formatter": "0.0.1",
     "express": "^4.6.1",
-    "testem": "^0.6.17"
+    "testem": "^0.6.17",
+    "git-repo-version": "0.0.2"
   }
 }

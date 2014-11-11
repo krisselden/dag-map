@@ -71,7 +71,7 @@ bundle = replace(bundle, {
   files: [ 'dag-map.js' ],
   pattern: {
     match: /VERSION_PLACEHOLDER_STRING/g,
-    replacement: calculateVersion()
+    replacement: calculateVersion(10)
   }
 });
 
@@ -94,7 +94,7 @@ function generateNamedAMDTree(inputTree, outputFile) {
     files: [ outputFile ],
     pattern: {
       match: /VERSION_PLACEHOLDER_STRING/g,
-      replacement: calculateVersion()
+      replacement: calculateVersion(10)
     }
   });
 
