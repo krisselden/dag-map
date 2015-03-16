@@ -11,7 +11,8 @@
     "build": "ember build",
     "build:production": "ember build --environment=production",
     "test": "ember test",
-    "test:server": "ember test --server"
+    "test:server": "ember test --server",
+    "prepublish": "ember build --environment production"
   },
   "author": "Kris Selden",
   "license": "MIT",
