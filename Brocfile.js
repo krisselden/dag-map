@@ -1,118 +1,41 @@
-/* jshint node:true, undef:true, unused:true */
-var AMDFormatter = require('es6-module-transpiler-amd-formatter');
-var closureCompiler = require('broccoli-closure-compiler');
-var compileModules = require('broccoli-compile-modules');
-var mergeTrees = require('broccoli-merge-trees');
-var moveFile = require('broccoli-file-mover');
-var pluckFilesFrom = require('broccoli-static-compiler');
-var jshint = require('broccoli-jshint');
+var stew = require('broccoli-stew');
+var compiledModules = require('broccoli-es6-module-transpiler');
+var uglify = require('broccoli-uglify-js');
+var find = stew.find;
+var env  = stew.env;
+var rename = stew.rename;
+var mv = stew.mv;
+var path = require('path');
 
-var concat           = require('broccoli-concat');
-var replace          = require('broccoli-string-replace');
-var calculateVersion = require('./config/calculateVersion');
-var path             = require('path');
+var lib       = find('lib');
+var tests     = find('tests');
+var testIndex = find(tests, 'tests/index.html');
+var qunit     = find(path.dirname(require.resolve('qunitjs')) + '/qunit.{js,css}');
 
-var bowerDirectory = 'bower_components';
+var qunit = rename(qunit, path.basename);
 
-var loader = pluckFilesFrom(bowerDirectory, {
-  srcDir: '/loader',
-  files: [ 'loader.js' ],
-  destDir: '/tests'
+var dagMap = compiledModules(lib, {
+  format: 'bundle',
+  entry: 'dag-map.umd.js',
+  output: 'dag-map.js'
 });
 
-var qunit = pluckFilesFrom(bowerDirectory, {
-  srcDir: '/qunit/qunit',
-  destDir: '/tests'
+var tests = compiledModules(find(tests, '**/*.js'), {
+  format: 'bundle',
+  entry: 'index.umd.js',
+  output: 'tests/index.js'
 });
 
-var testLoader = pluckFilesFrom(bowerDirectory, {
-  srcDir: 'ember-cli-test-loader',
-  files: [ 'test-loader.js' ],
-  destDir: '/tests'
+env('production', function() {
+  dagMap = find([
+    rename(uglify(dagMap), '.js', '.min.js'),
+    dagMap
+  ]);
 });
 
-var testIndex = pluckFilesFrom('tests', {
-  srcDir: '/',
-  files: ['index.html'],
-  destDir: '/tests/'
-});
-
-var configTree = pluckFilesFrom('config', {
-  srcDir: '/',
-  files: [ 'versionTemplate.txt' ],
-  destDir: '/'
-});
-
-var testsTree = pluckFilesFrom('tests', {
-  srcDir: '/',
-  files: [ '**/*.js' ],
-  destDir: '/'
-});
-
-var jshintLib = jshint('lib');
-var jshintTests = jshint(testsTree);
-
-var bundle = compileModules('lib', {
-  inputFiles: ['dag-map.umd.js'],
-  output: '/dag-map.js',
-  formatter: 'bundle',
-});
-
-
-bundle = concat(mergeTrees([bundle, configTree]), {
-  inputFiles: [
-    'versionTemplate.txt',
-    'dag-map.js'
-  ],
-  outputFile: '/dag-map.js'
-});
-
-bundle = replace(bundle, {
-  files: [ 'dag-map.js' ],
-  pattern: {
-    match: /VERSION_PLACEHOLDER_STRING/g,
-    replacement: calculateVersion(10)
-  }
-});
-
-function generateNamedAMDTree(inputTree, outputFile) {
-  var workingTree = compileModules(inputTree, {
-    inputFiles: ['**/*.js'],
-    output: '/',
-    formatter: new AMDFormatter()
-  });
-
-  workingTree = concat(mergeTrees([workingTree, configTree]), {
-    inputFiles: [
-      'versionTemplate.txt',
-      '**/*.js'
-    ],
-    outputFile: '/' + outputFile
-  });
-
-  workingTree = replace(workingTree, {
-    files: [ outputFile ],
-    pattern: {
-      match: /VERSION_PLACEHOLDER_STRING/g,
-      replacement: calculateVersion(10)
-    }
-  });
-
-  return workingTree;
-}
-
-var namedAMDTree = generateNamedAMDTree('lib', 'dag-map.amd.js');
-var namedAMDTestTree = generateNamedAMDTree(mergeTrees(['lib', testsTree, jshintLib, jshintTests]), 'dag-tests.amd.js');
-
-var trees = [qunit, loader, testIndex, testLoader, bundle, namedAMDTree, namedAMDTestTree];
-
-if (process.env.ENV === 'production') {
-  trees.push(closureCompiler(moveFile(bundle, {
-    srcFile: 'dag-map.js',
-    destFile: 'dag-map.min.js'
-  }), {
-    compilation_level: 'ADVANCED_OPTIMIZATIONS',
-  }));
-}
-
-module.exports = mergeTrees(trees);
+module.exports = find([
+  dagMap,
+  tests,
+  testIndex,
+  mv(qunit, 'tests')
+]);
