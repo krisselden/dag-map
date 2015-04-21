@@ -3,9 +3,12 @@ var compiledModules = require('broccoli-es6-module-transpiler');
 var uglify = require('broccoli-uglify-js');
 var find = stew.find;
 var env  = stew.env;
+var map  = stew.map;
 var rename = stew.rename;
 var mv = stew.mv;
 var path = require('path');
+var version = require('git-repo-version');
+var fs = require('fs');
 
 var lib       = find('lib');
 var tests     = find('tests');
@@ -33,8 +36,16 @@ env('production', function() {
   ]);
 });
 
+function prependLicense(content, path) {
+  var license = fs.readFileSync('./config/versionTemplate.txt').toString().replace(/VERSION_PLACEHOLDER_STRING/, version());
+
+  content.prepend(license);
+
+  return content;
+}
+
 module.exports = find([
-  dagMap,
+  map(dagMap, prependLicense),
   tests,
   testIndex,
   mv(qunit, 'tests')
