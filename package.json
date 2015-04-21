@@ -1,6 +1,6 @@
 {
   "name": "dag-map",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "DAG stands for Directed acyclic graph. It is used to build a graph of dependencies checking that there isn't circular dependencies",
   "main": "dist/dag-map.js",
   "repository": {
