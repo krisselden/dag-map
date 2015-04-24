@@ -16,13 +16,13 @@ var qunit = rename(qunit, path.basename);
 
 var dagMap = compiledModules(lib, {
   format: 'bundle',
-  entry: 'dag-map.umd.js',
+  entry: 'dag-map.umd',
   output: 'dag-map.js'
 });
 
-var tests = compiledModules(find(tests, '**/*.js'), {
+var tests = compiledModules(tests, {
   format: 'bundle',
-  entry: 'index.umd.js',
+  entry: 'index.umd',
   output: 'tests/index.js'
 });
 
