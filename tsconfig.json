@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "es2015",
+    "target": "es5",
+    "strictNullChecks": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noEmitHelpers": true,
+    "moduleResolution": "node",
+    "sourceMap": true
+  },
+  "files": [
+    "dag-map.ts"
+  ]
+}

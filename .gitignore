@@ -1,5 +1,7 @@
 .DS_Store
-node_modules
-bower_components
-tmp/
-dist/
+node_modules/
+/tmp/
+dag-map.js
+dag-map.umd.js
+*.map
+*.d.ts

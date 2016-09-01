@@ -1,102 +1,79 @@
-import indexOf from './helper';
+(function (QUnit, DAG) {
+  "use strict";
 
-module('Ember.DAG');
+  QUnit.module('DAG');
 
-test('detects circular dependencies when added', function(){
-  var graph = new window.DAG();
+  QUnit.test('detects circular dependencies when added', function(assert){
+    var graph = new DAG();
 
-  graph.addEdges('eat omelette', 1);
-  graph.addEdges('buy eggs', 2) ;
-  graph.addEdges('fry omelette', 3, 'eat omelette', 'shake eggs');
-  graph.addEdges('shake eggs', 4, undefined, 'buy eggs');
-  graph.addEdges('buy oil', 5, 'fry omelette');
-  graph.addEdges('warm oil', 6, 'fry omelette', 'buy oil');
-  graph.addEdges('prepare salad', 7);
-  graph.addEdges('prepare the table', 8, 'eat omelette');
-  graph.addEdges('clear the table', 9, undefined, 'eat omelette');
-  graph.addEdges('say grace', 10, 'eat omelette', 'prepare the table');
+    graph.add('eat omelette', 1);
+    graph.add('buy eggs', 2) ;
+    graph.add('fry omelette', 3, 'eat omelette', 'shake eggs');
+    graph.add('shake eggs', 4, undefined, 'buy eggs');
+    graph.add('buy oil', 5, 'fry omelette');
+    graph.add('warm oil', 6, 'fry omelette', 'buy oil');
+    graph.add('prepare salad', 7);
+    graph.add('prepare the table', 8, 'eat omelette');
+    graph.add('clear the table', 9, undefined, 'eat omelette');
+    graph.add('say grace', 10, 'eat omelette', 'prepare the table');
 
-  throws(function(){
-    graph.addEdges('imposible', 11, 'shake eggs', 'eat omelette');
-  }, Error, 'raises an error when a circular dependency is added');
-});
-
-test('#topsort iterates over the edges respecting precedence order', function(){
-  var graph = new DAG();
-  var names = [];
-  var index = 0;
-
-  graph.addEdges('eat omelette', 1);
-  graph.addEdges('buy eggs', 2) ;
-  graph.addEdges('fry omelette', 3, 'eat omelette', 'shake eggs');
-  graph.addEdges('shake eggs', 4, undefined, 'buy eggs');
-  graph.addEdges('buy oil', 5, 'fry omelette');
-  graph.addEdges('warm oil', 6, 'fry omelette', 'buy oil');
-  graph.addEdges('prepare salad', 7);
-  graph.addEdges('prepare the table', 8, 'eat omelette');
-  graph.addEdges('clear the table', 9, undefined, 'eat omelette');
-  graph.addEdges('say grace', 10, 'eat omelette', 'prepare the table');
-
-
-  graph.topsort(function(vertex, path){
-    names[index] = vertex.name;
-    index++;
+    assert.throws(function() {
+        graph.add('imposible', 11, 'shake eggs', 'eat omelette');
+      },
+      new Error('cycle detected: imposible <- eat omelette <- fry omelette <- shake eggs <- imposible'),
+      'raises an error when a circular dependency is added'
+    );
   });
 
-  ok(indexOf(names, 'buy eggs') < indexOf(names, 'shake eggs'), 'you need eggs to shake them');
-  ok(indexOf(names, 'buy oil') < indexOf(names, 'warm oil'), 'you need oil to warm it');
-  ok(indexOf(names, 'eat omelette') < indexOf(names, 'clear the table'), 'you clear the table after eat');
-  ok(indexOf(names, 'fry omelette') < indexOf(names, 'eat omelette'), 'cook before eat');
-  ok(indexOf(names, 'shake eggs') < indexOf(names, 'fry omelette'), 'shake before put into the pan');
-  ok(indexOf(names, 'prepare salad') > -1, 'we don\'t know when we prepare the salad, but we do');
-});
+  QUnit.test('#topsort iterates over the edges respecting precedence order', function(assert){
+    var graph = new DAG();
+    var names = [];
+    var index = 0;
 
-test('#addEdged supports both strings and arrays to specify precedences', function(){
-  var graph = new DAG();
-  var names = [];
-  var index = 0;
+    graph.add('eat omelette', 1);
+    graph.add('buy eggs', 2) ;
+    graph.add('fry omelette', 3, 'eat omelette', 'shake eggs');
+    graph.add('shake eggs', 4, undefined, 'buy eggs');
+    graph.add('buy oil', 5, 'fry omelette');
+    graph.add('warm oil', 6, 'fry omelette', 'buy oil');
+    graph.add('prepare salad', 7);
+    graph.add('prepare the table', 8, 'eat omelette');
+    graph.add('clear the table', 9, undefined, 'eat omelette');
+    graph.add('say grace', 10, 'eat omelette', 'prepare the table');
 
-  graph.addEdges('eat omelette', 1);
-  graph.addEdges('buy eggs', 2) ;
-  graph.addEdges('fry omelette', 3, 'eat omelette', 'shake eggs');
-  graph.addEdges('shake eggs', 4, undefined, 'buy eggs');
-  graph.addEdges('buy oil', 5, ['fry omelette', 'shake eggs', 'prepare the table'], ['warm oil']);
-  graph.addEdges('prepare the table', 5, undefined, ['fry omelette']);
 
-  graph.topsort(function(vertex, path){
-    names[index] = vertex.name;
-    index++;
+    graph.topsort(function(name, key){
+      names[index] = name;
+      index++;
+    });
+
+    assert.ok(names.indexOf('buy eggs') < names.indexOf('shake eggs'), 'you need eggs to shake them');
+    assert.ok(names.indexOf('buy oil') < names.indexOf('warm oil'), 'you need oil to warm it');
+    assert.ok(names.indexOf('eat omelette') < names.indexOf('clear the table'), 'you clear the table after eat');
+    assert.ok(names.indexOf('fry omelette') < names.indexOf('eat omelette'), 'cook before eat');
+    assert.ok(names.indexOf('shake eggs') < names.indexOf('fry omelette'), 'shake before put into the pan');
+    assert.ok(names.indexOf('prepare salad') > -1, 'we don\'t know when we prepare the salad, but we do');
   });
 
-  deepEqual(names, ['buy eggs', 'warm oil', 'buy oil', 'shake eggs', 'fry omelette', 'eat omelette', 'prepare the table']);
-});
+  QUnit.test('#add supports both strings and arrays to specify precedences', function(assert){
+    var graph = new DAG();
+    var names = [];
+    var index = 0;
 
-test('readme example', function() {
-  // create a new draph;
-  var graph = new DAG();
+    graph.add('eat omelette', 1);
+    graph.add('buy eggs', 2) ;
+    graph.add('fry omelette', 3, 'eat omelette', 'shake eggs');
+    graph.add('shake eggs', 4, undefined, 'buy eggs');
+    graph.add('buy oil', 5, ['fry omelette', 'shake eggs', 'prepare the table'], ['warm oil']);
+    graph.add('prepare the table', 5, undefined, ['fry omelette']);
 
-  // add some nodes
-  graph.add('foo');
-  graph.add('bar');
-  graph.add('baz');
+    graph.topsort(function(name, value){
+      names[index] = name;
+      index++;
+    });
 
-  // currently, no edges exist between these nodes, so lets add some
-
-  graph.addEdge('foo', 'bar');
-
-  // we now have an edge from 'foo' -> 'bar';
-
-  graph.addEdge('bar', 'baz');
-
-  // we now have an edge from 'foo' -> 'bar' -> 'baz';
-
-  // to have the graph calculate this topSort for us, we can use the topSort
-  // iterator, to build an ordered
-  var vertices = [];
-
-  graph.topsort(function(vertex, path){
-    vertices.push(vertex.name);
+    assert.deepEqual(names, ['buy eggs', 'warm oil', 'buy oil', 'shake eggs', 'fry omelette', 'eat omelette', 'prepare the table']);
   });
 
-  deepEqual(vertices, [ 'foo', 'bar', 'baz' ]);
-});
+}(typeof QUnit === 'undefined' ? require('qunitjs') : QUnit,
+  typeof DAG === 'undefined' ? require('../dag-map.umd').default : DAG.default));
