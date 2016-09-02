@@ -1,7 +1,0 @@
-/*!
- * @overview DAG.js - A directed acyclic graph library for JavaScript
- * @copyright Copyright (c) 2015 Kris Selden and contributors
- * @license   Licensed under MIT license
- *            See https://raw.githubusercontent.com/ember/dag.js/master/LICENSE
- * @version   VERSION_PLACEHOLDER_STRING
- */
