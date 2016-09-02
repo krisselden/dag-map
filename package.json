@@ -37,9 +37,7 @@
     "rollup": "^0.34.9",
     "sorcery": "^0.10.0",
     "tslint": "^3.14.0",
-    "typescript": "^2.0.0"
-  },
-  "dependencies": {
+    "typescript": "^2.0.0",
     "qunitjs": "^2.0.1"
   }
 }
