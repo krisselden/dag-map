@@ -1,6 +1,6 @@
 {
   "name": "dag-map",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A map of key/value pairs that can be traversed in topological order",
   "main": "dag-map.umd.js",
   "module": "dag-map.js",
