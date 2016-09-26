@@ -16,7 +16,7 @@ export default class DAG<T> {
    * Adds a key/value pair with dependencies on other key/value pairs.
    *
    * @public
-   * @method addEdges
+   * @method add
    * @param {string[]}   key The key of the vertex to be added.
    * @param {any}      value The value of that vertex.
    * @param {string[]|string|undefined}  before A key or array of keys of the vertices that must
