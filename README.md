@@ -1,8 +1,6 @@
 # dag-map [![Build Status](https://travis-ci.org/krisselden/dag-map.png?branch=master)](https://travis-ci.org/krisselden/dag-map)
 
-An ordered map of key/value pairs and a simple API for adding contraints
-(directed and acyclic) which provides a way of iterating key/value pairs
-in topological order.
+A topologically ordered map of key/value pairs with a simple API for adding constraints.
 
 Used for ordering initializers in Ember.  Has a flexible constraint syntax
 that can add before/after contraints that can forward reference things
