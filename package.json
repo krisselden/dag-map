@@ -1,6 +1,6 @@
 {
   "name": "dag-map",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A topologically ordered map of key/value pairs with a simple API for adding constraints.",
   "main": "dag-map.umd.js",
   "module": "dag-map.js",
