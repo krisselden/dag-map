@@ -41,8 +41,7 @@
     graph.add('clear the table', 9, undefined, 'eat omelette');
     graph.add('say grace', 10, 'eat omelette', 'prepare the table');
 
-
-    graph.topsort(function(name, key){
+    graph.each(function(name, key){
       names[index] = name;
       index++;
     });
@@ -66,6 +65,26 @@
     graph.add('shake eggs', 4, undefined, 'buy eggs');
     graph.add('buy oil', 5, ['fry omelette', 'shake eggs', 'prepare the table'], ['warm oil']);
     graph.add('prepare the table', 5, undefined, ['fry omelette']);
+
+    graph.each(function(name, value){
+      names[index] = name;
+      index++;
+    });
+
+    assert.deepEqual(names, ['buy eggs', 'warm oil', 'buy oil', 'shake eggs', 'fry omelette', 'eat omelette', 'prepare the table']);
+  });
+
+  QUnit.test('#addEdges check old API', function(assert){
+    var graph = new DAG();
+    var names = [];
+    var index = 0;
+
+    graph.addEdges('eat omelette', 1);
+    graph.addEdges('buy eggs', 2) ;
+    graph.addEdges('fry omelette', 3, 'eat omelette', 'shake eggs');
+    graph.addEdges('shake eggs', 4, undefined, 'buy eggs');
+    graph.addEdges('buy oil', 5, ['fry omelette', 'shake eggs', 'prepare the table'], ['warm oil']);
+    graph.addEdges('prepare the table', 5, undefined, ['fry omelette']);
 
     graph.topsort(function(name, value){
       names[index] = name;
