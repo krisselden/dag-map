@@ -14,6 +14,12 @@ runTest(DAG_LAST);
 print("DEV");
 runTest(DAG_DEV);
 
+print("DEV");
+runTest(DAG_DEV);
+
+print("RELEASE");
+runTest(DAG_LAST);
+
 function runTest(DAG) {
   function createMap() {
     return new DAG.default();
@@ -34,18 +40,23 @@ function runTest(DAG) {
 
   var map;
 
+  var use = [];
+
   measure(function() {
     map = createMap();
     addKeys(map, DATA["set1"]);
-    map.each(k => {});
+    map.each((k, v) => use.push([k, v]));
   });
 
   measure(function() {
-    var c = 100000;
+    var c = 10;
     while (c--) {
       map = createMap();
       addKeys(map, DATA["set2"]);
-      map.each(k => {});
+      map.each((k, v) => use.push([k, v]));
+      use = [];
     }
   });
+
+  print(JSON.stringify(use));
 }
