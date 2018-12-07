@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "dependencies": {
+    "dag-map": "2.0.2"
+  }
+}

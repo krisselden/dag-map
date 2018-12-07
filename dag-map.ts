@@ -24,8 +24,13 @@ export default class DAG<T> {
    * @param after  An string or array of strings with the keys of the
    *               vertices that must be after this vertex is visited.
    */
-  public add(key: string, value: T | undefined, before?: MaybeStringOrArray, after?: MaybeStringOrArray) {
-    if (!key) throw new Error('argument `key` is required');
+  public add(
+    key: string,
+    value: T | undefined,
+    before?: MaybeStringOrArray,
+    after?: MaybeStringOrArray
+  ) {
+    if (!key) throw new Error("argument `key` is required");
     let vertices = this._vertices;
     let v = vertices.add(key);
     v.val = value;
@@ -50,13 +55,6 @@ export default class DAG<T> {
   }
 
   /**
-   * @deprecated please use add.
-   */
-  public addEdges(key: string, value: T | undefined, before?: MaybeStringOrArray, after?: MaybeStringOrArray) {
-    this.add(key, value, before, after);
-  }
-
-  /**
    * Visits key/value pairs in topological order.
    *
    * @public
@@ -65,15 +63,7 @@ export default class DAG<T> {
   public each(callback: Callback<T>) {
     this._vertices.walk(callback);
   }
-
-  /**
-   * @deprecated please use each.
-   */
-  public topsort(callback: Callback<T>) {
-    this.each(callback);
-  }
 }
-
 
 /** @private */
 class Vertices<T> {
@@ -93,14 +83,14 @@ class Vertices<T> {
       if (vertex.key === key) return vertex;
     }
     this.length = l + 1;
-    return this[l] = {
+    return (this[l] = {
       idx: l,
       key: key,
       val: undefined,
       out: false,
       flag: false,
       length: 0
-    };
+    });
   }
 
   public addEdge(v: Vertex<T>, w: Vertex<T>): void {
@@ -142,7 +132,7 @@ class Vertices<T> {
     this.visit(v, w);
     if (this.path.length > 0) {
       let msg = "cycle detected: " + w;
-      this.each(this.path, (key) => {
+      this.each(this.path, key => {
         msg += " <- " + key;
       });
       throw new Error(msg);
@@ -213,6 +203,7 @@ interface Vertex<T> {
 /** @private */
 class IntStack {
   [index: number]: number;
+
   public length = 0;
 
   push(n: number) {
