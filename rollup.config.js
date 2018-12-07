@@ -1,8 +1,9 @@
 import sourcemaps from "rollup-plugin-sourcemaps";
+import buble from "rollup-plugin-buble";
 
 export default {
   input: "dag-map.js",
-  plugins: [sourcemaps()],
+  plugins: [sourcemaps(), buble()],
   output: [
     {
       file: "dag-map.umd.js",
